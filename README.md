@@ -1,5 +1,5 @@
 # RSS Scraper
-Fills out a sample directory of RSS feeds. It does so simply by querying the Google Feeds API for a wide variety of queries and concatenating the results into JSON that is spit out into the console. The Google Feeds API is deprecated and could disappear any day now, so let's get as much out of it as we can while it's still here :)
+Scrapes to fill a directory of popular RSS feeds. It does so simply by querying the [Google Feed API](https://developers.google.com/feed/) for a wide variety of queries and concatenating the results into JSON that is spit out into the console. The Google Feed API is deprecated and could disappear any day now, so let's get as much out of it as we can while it's still here :)
 
 ## How to Use
 ```node index.js > feeds.json```
