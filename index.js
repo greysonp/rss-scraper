@@ -1,6 +1,5 @@
 var async = require('async');
 var request = require('request');
-var _ = require('lodash');
 
 function getFeed(query, callback) {
   var opts = {
@@ -19,15 +18,44 @@ function getFeed(query, callback) {
       if (!data.responseData || !data.responseData.entries) {
         return callback(null, []);
       }
+
+      // Add extra info to the results, as well as clean up a bit
+      for (var i = 0; i < data.responseData.entries.length; i++) {
+        var entry = data.responseData.entries[i];
+        entry.description = entry.contentSnippet;
+        delete entry.contentSnippet;
+        entry.tags = [query];
+        entry.icon = 'http://s2.googleusercontent.com/s2/favicons?domain=' + entry.link;
+      }
       callback(null, data.responseData.entries);
     }
   );
 }
 
+function merge(result) {
+  // 'result' is a list of lists. This flattens that to a single list.
+  var flat = [].concat.apply([], result);
+
+  // First we map everything by the link field, merging items that map to the same link.
+  var mapByUrl = {};
+  flat.forEach(function(item) {
+    if (mapByUrl[item.url]) {
+      mapByUrl[item.url].tags = mapByUrl[item.url].tags.concat(item.tags);
+    } else {
+      mapByUrl[item.url] = item;
+    }
+  });
+
+  // Then we flatten the map back out into a list and wrap it up nice
+  var unique = [];
+  Object.keys(mapByUrl).forEach(function(key) {
+    unique.push(mapByUrl[key]);
+  });
+  return {
+    feeds: unique
+  };
+}
+
 async.map(require('./searches'), getFeed, function(err, result) {
-  var merged = [].concat.apply([], result);
-  var unique = {
-    feeds: _.uniqBy(merged, 'url')
-  }
-  console.log(JSON.stringify(unique, null, 2));
+  console.log(JSON.stringify(merge(result), null, 2));
 });

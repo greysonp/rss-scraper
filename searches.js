@@ -39,6 +39,7 @@ module.exports = [
   'gold',
   'nascar',
   'tech',
+  'technology',
   'gadgets',
   'electronics',
   'science',
